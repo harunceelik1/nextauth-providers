@@ -1,10 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-
+import { BiPlus } from "react-icons/bi";
+import Link from "next/navigation";
 export default function ShopPage() {
   const [titles, setTitles] = useState([]);
-
+  const deneme = [];
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -26,6 +27,19 @@ export default function ShopPage() {
     fetchData();
   }, []);
 
+  function dizi(sayi) {
+    deneme.push(sayi);
+    const totalDizi = deneme.reduce((sayac, sayi) => {
+      return sayac + sayi;
+    }, 0);
+    console.log("toplam dizi", totalDizi);
+  }
+
+  const totalPrice = titles.reduce((accumulator, item) => {
+    return accumulator + item.price;
+  }, 0);
+  console.log("Toplam fiyat :", totalPrice);
+  console.log(deneme);
   return (
     // <div>
     //   <h1>ShopPage</h1>
@@ -36,22 +50,31 @@ export default function ShopPage() {
     //   </ul>
     // </div>
     <div className="container mx-auto py-8 ">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 bg-orange-600">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3  ">
         {titles.map((item) => (
           <div
             key={item.id}
-            className="bg-white rounded shadow p-4 text-center"
+            className=" rounded-lg border border-b-gray-900 shadow p-10 text-center"
           >
-            <div className=" h-20 mb-2 flex items-center justify-center">
-              <Image
-                src="/assets/images/sneaker.png"
-                alt="Sneaker"
-                width={100}
-                height={100}
-              />
+            <div className="h-40 mb-10 flex items-center justify-center ">
+              <Image src={item.image} alt="Sneaker" width={80} height={80} />
             </div>
-            <p>{item.id}</p>
-            <h1 className="text-xl font-bold mb-2">{item.title}</h1>
+            <div className="gap-2 ">
+              <h1 className="text-xl font-bold mb-2 line-clamp-1 ">
+                {item.title}
+              </h1>
+              <p>{item.price}</p>
+              <p>{item.id}</p>
+            </div>
+            <div className="flex justify-between items-center ">
+              <h1>Sa</h1>
+              <button
+                onClick={() => dizi(item.price)}
+                className="mt-2 p-0 w-12 h-12 bg-red-600 rounded-full hover:bg-red-700 active:shadow-lg mouse shadow transition ease-in duration-200 focus:outline-none"
+              >
+                <BiPlus className="w-6 h-6 inline-block text-white  " />
+              </button>
+            </div>
           </div>
         ))}
       </div>
