@@ -3,22 +3,21 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { BiPlus } from "react-icons/bi";
 import Link from "next/navigation";
+import { useRouter } from "next/navigation";
+import { getAllProducts } from "@/app/api/shop/route";
+import Product from "../product";
+import Loading from "../loading";
+
 export default function ShopPage() {
   const [titles, setTitles] = useState([]);
   const deneme = [];
+  const router = useRouter();
+  const { id, title, price, image } = titles;
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/shop", {
-          method: "GET",
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setTitles(data);
-        } else {
-          console.error("API request failed with status:", response.status);
-        }
+        const products = await getAllProducts();
+        setTitles(products);
       } catch (error) {
         console.error("Error occurred while fetching data:", error);
       }
@@ -26,6 +25,34 @@ export default function ShopPage() {
 
     fetchData();
   }, []);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch("/api/shop", {
+  //         method: "GET",
+  //       });
+
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         setTitles(data);
+  //       } else {
+  //         console.error("API request failed with status:", response.status);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error occurred while fetching data:", error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []);
+
+  // useEffect( () => {
+  //   const data = async ()=>{
+  //     const [products] = await Promise.all([getAllProducts()]);
+  //   setTitles(products);
+  //   }
+  // }, []);
 
   function dizi(sayi) {
     deneme.push(sayi);
@@ -40,44 +67,29 @@ export default function ShopPage() {
   }, 0);
   console.log("Toplam fiyat :", totalPrice);
   console.log(deneme);
-  return (
-    // <div>
-    //   <h1>ShopPage</h1>
-    //   <ul>
-    //     {titles.map((item) => (
-    //       <li key={item.id}>{item.title}</li>
-    //     ))}
-    //   </ul>
-    // </div>
-    <div className="container mx-auto py-8 ">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3  ">
-        {titles.map((item) => (
-          <div
-            key={item.id}
-            className=" rounded-lg border border-b-gray-900 shadow p-10 text-center"
-          >
-            <div className="h-40 mb-10 flex items-center justify-center ">
-              <Image src={item.image} alt="Sneaker" width={80} height={80} />
-            </div>
-            <div className="gap-2 ">
-              <h1 className="text-xl font-bold mb-2 line-clamp-1 ">
-                {item.title}
-              </h1>
-              <p>{item.price}</p>
-              <p>{item.id}</p>
-            </div>
-            <div className="flex justify-between items-center ">
-              <h1>Sa</h1>
-              <button
-                onClick={() => dizi(item.price)}
-                className="mt-2 p-0 w-12 h-12 bg-red-600 rounded-full hover:bg-red-700 active:shadow-lg mouse shadow transition ease-in duration-200 focus:outline-none"
-              >
-                <BiPlus className="w-6 h-6 inline-block text-white  " />
-              </button>
-            </div>
-          </div>
-        ))}
+
+  const handleClick = (id) => {
+    router.push(`/shop/${id}`);
+  };
+
+  if (!titles) {
+    return (
+      <div className="flex justify-center items-center">
+        <Loading />
       </div>
+    );
+  }
+  return (
+    <div>
+      <section className="py-16 ">
+        <div className="container mx-auto ">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-[30px] max-w-sm mx-auto md:max-w-none md:mx-0">
+            {titles.map((item) => {
+              return <Product product={item} key={item.id} />;
+            })}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
